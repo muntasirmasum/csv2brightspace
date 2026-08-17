@@ -28,6 +28,7 @@ jobs:
           check '\bfetch\s*\(' 'index.html must not make network requests'
           check 'XMLHttpRequest' 'index.html must not make network requests'
           check '@import' 'index.html must not import external CSS'
+          check 'fonts\.(googleapis|gstatic)' 'fonts must stay embedded, not linked from Google'
           exit $fail
 
       - uses: actions/setup-node@v4

@@ -26,6 +26,27 @@ The Brightspace CSV format has no published specification. D2L's sample file *is
 - Vertical CSV (the Brightspace import artifact): CRLF, every row padded to exactly 5 columns, **no BOM**. This matches D2L's own file byte for byte in shape.
 - Flat CSV (template, example, spreadsheet round-trip): CRLF **with** a UTF-8 BOM, because these are opened in Excel and Excel misreads BOM-less UTF-8.
 
+## Design
+
+The interface follows the design system of the author's academic site: Newsreader
+600 for all display type, IBM Plex Sans for everything functional, one deep violet
+(`--accent`, `#46166b`) doing all interactive and emphasis work, hairline 1px
+borders instead of shadows, and a full dark palette under `prefers-color-scheme`.
+Every color is a custom property. Never hard-code a hex in markup or in a rule;
+add or reuse a var, or dark mode silently breaks.
+
+Three semantic colors are additions that a personal site never needed: a danger
+red for blocking errors, a green for correct answers in the preview, and the
+site's gold reassigned from "under review" to "warning". Keep them semantic. The
+violet is not a status color and the gold is not decorative.
+
+Both typefaces are SIL Open Font License 1.1, subset to Latin and embedded as
+woff2 data URIs (~87 KB of the file). They are embedded rather than linked from
+Google Fonts for three reasons: a `<link>` would fail the contract check above, it
+would break the page when opened from `file://`, and it would quietly send every
+visitor's IP to a third party while the page claims no data leaves their device.
+If a face needs regenerating, subset with `fonttools` and keep the OFL notice.
+
 ## Testing
 
 After any change to the converter, open `tests/index.html` in a browser and confirm all assertions pass. The fixtures include D2L's official 7-type sample, which is the only artifact exercising `WR`, `SA`, `M`, and `O`. Three round-trip differences are known and asserted as *expected*, not tolerated silently: `SA` answer-mode collapse, `M` match-row reordering, and `O` per-item HTML flag collapse.
