@@ -1,0 +1,38 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Architectural contract - no external dependencies
+        run: |
+          # index.html must stay self-contained and work from a file:// URL.
+          # ES modules and any external asset would break that, silently.
+          fail=0
+          check () {
+            if grep -nEi "$1" index.html; then
+              echo "::error::$2"
+              fail=1
+            fi
+          }
+          check '<script[^>]+\ssrc=' 'index.html must not load an external script'
+          check '<link[^>]+stylesheet' 'index.html must not load an external stylesheet'
+          check 'type="module"' 'ES modules are CORS-blocked from file:// origins'
+          check '\bfetch\s*\(' 'index.html must not make network requests'
+          check 'XMLHttpRequest' 'index.html must not make network requests'
+          check '@import' 'index.html must not import external CSS'
+          exit $fail
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Round-trip tests
+        run: node tests/roundtrip.mjs

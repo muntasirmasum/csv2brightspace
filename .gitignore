@@ -1,0 +1,8 @@
+.DS_Store
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Generated output
+*-brightspace.csv
+*-flat.csv
+*_repaired.csv
